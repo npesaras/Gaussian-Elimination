@@ -26,7 +26,19 @@ public class Main {
         userInput.close(); // close scanner to avoid memory leak
     }
 
-    // This method gathers the input from the user.
+    /*
+     * Collects user input to create a standard and reduced row echelon matrix.
+     *
+     * This method collects user input to create a standard matrix and a reduced row echelon matrix. It first
+     * prompts the user to enter the number of unknowns and then iterates through the matrix, prompting the
+     * user to enter each value. The method also checks for invalid input and handles exceptions accordingly.
+     *
+     * Once the matrices are created, the method calls the `gsjrd` method to reduce the reduced row echelon
+     * matrix to its simplest form. If the method returns 0, indicating that the matrix has a unique solution,
+     * the method divides the last column of the reduced row echelon matrix by the corresponding diagonal
+     * element to obtain the solution.
+     */
+
     public static void collectMatrix() {
         Scanner userInput = new Scanner(System.in);
         System.out.println("Reduce Row Echelon Form");
@@ -82,7 +94,7 @@ public class Main {
                     System.out.print("\n================================================\n" +
                             "What would you like to do?\n" +
                             "1. Print Matrix\n" +
-                            "2. Print Matrix in Linear Form\n" +
+                            "2. Print Matrix in Linear Equation\n" +
                             "3. Print Augmented Matrix\n" +
                             "4. Print Reduced Row Echelon Form\n" +
                             "5. Show solutions\n" +
@@ -92,298 +104,322 @@ public class Main {
                             "Enter the number of your choice: ");
 
                     int option = userInput.nextInt();
-                    if (option == 8) {
-                        repeat_loop = false;
-                        break;
-                    } else if (option == 7) { // Input
-                        collectMatrix();
-                        break;
-                    } else if (option == 1) { // Print Matrix
-                        System.out.print("\n");
-                        System.out.print("Here is the Matrix Form of the system: \n");
-                        printMatrixForm(standardMatrix);
-                    } else if (option == 2) { // Print Linear Equation
-                        System.out.print("\n");
-                        System.out.print("Here is the Linear Equation: \n");
-                        printLinearEquations(standardMatrix);
-                    } else if (option == 3) { // Print Augmented Matrix
-                        System.out.print("\n");
-                        System.out.print("Here is the Augmented Identity Matrix Form of the system: \n");
-                        printaugidtMat(standardMatrix);
-                    } else if (option == 4) { // Print Reduced Row Echelon Form
-                        boolean some_loop = true;
-                        while (some_loop) {
-                            try {
-                                System.out.print("\n================================================\n" +
-                                        "What would you like to do?\n" +
-                                        "0. Return to Choices\n" +
-                                        "1. Print Matrix with all RREF Steps\n" +
-                                        "2. Print Last Step of RREF\n" +
-                                        "Enter the number of your choice: ");
-                                int option2 = userInput.nextInt();
-                                if (option2 == 0) {
-                                    some_loop = false;
-                                    break;
-                                } else if (option2 == 1) {
-                                    System.out.print("\n");
-                                    System.out.print(
-                                            "Here is the Reduced Row Echelon Form of the system (with its steps): \n");
-                                    printRdcechStep(standardMatrix);
-                                    System.out.print("\nHere is the Reduced Row Echelon Form of the system: \n");
-                                    printaugidtMat(reducedEchelonMatrix);
-                                    break;
-                                } else if (option2 == 2) {
-                                    System.out.print("\n");
-                                    System.out.print("Here is the Reduced Row Echelon Form of the system: \n");
-                                    printaugidtMat(reducedEchelonMatrix);
-                                    break;
+                    switch (option) {
+                        case 8: 
+                            repeat_loop = false;
+                            break;
+                        case 7:
+                            collectMatrix();
+                            break;
+                        case 1:
+                            System.out.print("\n");
+                            System.out.print("Here is the Matrix Form of the system: \n");
+                            printMatrixForm(standardMatrix);
+                            break;
+                        case 2:
+                            System.out.print("\n");
+                            System.out.print("Here is the Linear Equation: \n");
+                            printLinearEquations(standardMatrix);
+                            break;
+                        case 3:
+                            System.out.print("\n");
+                            System.out.print("Here is the Augmented Identity Matrix Form of the system: \n");
+                            printaugidtMat(standardMatrix);
+                            break;
+                        case 4:
+                            boolean some_loop = true;
+                            while (some_loop) {
+                                try {
+                                    System.out.print("\n================================================\n" +
+                                            "What would you like to do?\n" +
+                                            "0. Return to Choices\n" +
+                                            "1. Print Matrix with all RREF Steps\n" +
+                                            "2. Print Last Step of RREF\n" +
+                                            "Enter the number of your choice: ");
+                                    
+                                    int option2 = userInput.nextInt();
+
+                                    switch(option2) {
+                                        case 0:
+                                            some_loop = false;
+                                            break;
+                                        case 1:
+                                            System.out.print("\n");
+                                            System.out.print("Here is the Reduced Row Echelon Form of the system (with its steps): \n");
+                                            printRdcechStep(standardMatrix);
+                                            System.out.print("\nHere is the Reduced Row Echelon Form of the system: \n");
+                                            printaugidtMat(reducedEchelonMatrix);
+                                            break;
+                                        case 2:
+                                            System.out.print("\n");
+                                            System.out.print("Here is the Reduced Row Echelon Form of the system: \n");
+                                            printaugidtMat(reducedEchelonMatrix);
+                                            break;
+                                        default:
+                                            break;
+                                        }
+                                    }catch (Exception e) {
+                                        System.out.println("Input invalid. Please try again!");
+                                        userInput.next();
+                                    }
+                                } 
+                        case 5:
+                            System.out.print("\n");
+                            System.out.print("The solution of the system: \n");
+                            int rows_num = reducedEchelonMatrix.length;
+                            int cols_num = reducedEchelonMatrix[0].length;
+
+                            if (solutionType == 1 && reducedEchelonMatrix[rows_num - 1][cols_num - 1] != 0) {
+                                System.out.println("The system has no solution.");
+                            } else if (solutionType == 1 && reducedEchelonMatrix[rows_num - 1][cols_num - 1] == 0) {
+                                double[] equation = standardMatrix[0];
+                                double answer = equation[unknwn];
+                                String[] Var = extractVariable(unknwn);
+                                double[] solutions = extractSolutions(reducedEchelonMatrix);
+                                showSolution(reducedEchelonMatrix, Var);
+                            } else {
+                                double[] solutions = extractSolutions(reducedEchelonMatrix);
+                                String[] Var = extractVariable(unknwn);
+                                for (int i = 0; i < unknwn; i++) {
+                                    if (Math.abs(solutions[i] - Math.floor(solutions[i])) < 0.001) {
+                                        double dbv = solutions[i];
+                                        int intv = (int) dbv;
+                                        System.out.println(Var[i] + " = " + intv);
+                                        dbv = (double) intv;
+                                        dbv = solutions[i];
+                                    } else if (solutions[i] == 0 || solutions[i] == -0) {
+                                        double dbv = solutions[i];
+                                        int intv = (int) dbv;
+                                        System.out.println(Var[i] + " = " + intv);
+                                        dbv = (double) intv;
+                                        dbv = solutions[i];
+                                    } else {
+                                        // By using %.2f, it will reduce the number of decimal places that will be
+                                        // printed into two only.
+                                        System.out.printf(Var[i] + " = " + "%.2f" + "\n", solutions[i]);
+                                    }
                                 }
-                            } catch (Exception e) {
-                                System.out.println("Input invalid. Please try again!");
-                                userInput.next();
+                                System.out.println("The system has a unique solution.");
                             }
-                        }
-                    } else if (option == 5) { // Show solutions
-                        System.out.print("\n");
-                        System.out.print("The solution of the system: \n");
-                        int rows_num = reducedEchelonMatrix.length;
-                        int cols_num = reducedEchelonMatrix[0].length;
-                        if (solutionType == 1 && reducedEchelonMatrix[rows_num - 1][cols_num - 1] != 0) {
-                            System.out.println("The system has no solution.");
-                        } else if (solutionType == 1 && reducedEchelonMatrix[rows_num - 1][cols_num - 1] == 0) {
-                            double[] equation = standardMatrix[0];
-                            double answer = equation[unknwn];
-                            String[] Var = extractVar(unknwn);
-                            double[] solutions = extractSolutions(reducedEchelonMatrix);
-                            showSolution(reducedEchelonMatrix, Var);
-                        } else {
-                            double[] solutions = extractSolutions(reducedEchelonMatrix);
-                            String[] Var = extractVar(unknwn);
-                            for (int i = 0; i < unknwn; i++) {
-                                if (Math.abs(solutions[i] - Math.floor(solutions[i])) < 0.001) {
-                                    double dbv = solutions[i];
+                            break;
+                        case 6:
+                            int rows_num2 = reducedEchelonMatrix.length;
+                            int cols_num2 = reducedEchelonMatrix[0].length;
+
+                            System.out.print("\n");
+                            System.out.print("The Matrix Form of the Equation: \n");
+                            printMatrixForm(standardMatrix);
+
+                            System.out.print("\n");
+                            System.out.print("The Reduced Row Echelon Form of the Equation: \n");
+                            printaugidtMat(reducedEchelonMatrix);
+
+                            System.out.print("\n");
+                            System.out.print("The Values of the Variables: \n");
+                            if (solutionType == 1 && reducedEchelonMatrix[rows_num2 - 1][cols_num2 - 1] != 0) {
+                                System.out.println("The system has no solution.");
+                            } else if (solutionType == 1 && reducedEchelonMatrix[rows_num2 - 1][cols_num2 - 1] == 0) {
+                                double[] equation = standardMatrix[0];
+                                double answer = equation[unknwn];
+                                String[] Var = extractVariable(unknwn);
+                                double[] solutions = extractSolutions(reducedEchelonMatrix);
+                                showSolution(reducedEchelonMatrix, Var);
+                            } else {
+                                double[] solutions = extractSolutions(reducedEchelonMatrix);
+                                String[] Var = extractVariable(unknwn);
+                                for (int i = 0; i < unknwn; i++) {
+                                    if (Math.abs(solutions[i] - Math.floor(solutions[i])) < 0.001) {
+                                        double dbv = solutions[i];
+                                        int intv = (int) dbv;
+                                        System.out.println(Var[i] + " = " + intv);
+                                        dbv = (double) intv;
+                                        dbv = solutions[i];
+                                    } else if (solutions[i] == 0 || solutions[i] == -0) {
+                                        double dbv = solutions[i];
+                                        int intv = (int) dbv;
+                                        System.out.println(Var[i] + " = " + intv);
+                                        dbv = (double) intv;
+                                        dbv = solutions[i];
+                                    } else {
+                                        // By using %.2f, it will reduce the number of decimal places that will be
+                                        // printed into two only.
+                                        System.out.printf(Var[i] + " = " + "%.2f" + "\n", solutions[i]);
+                                    }
+                                }
+                            }
+
+                            System.out.print("\n");
+                            System.out.print("Verifying the solution of the system: \n");
+                            if (solutionType == 1 && reducedEchelonMatrix[rows_num2 - 1][cols_num2 - 1] != 0) {
+                                System.out.println("The system has no solution. Cannot be verified!");
+                            } else if (solutionType == 1 && reducedEchelonMatrix[rows_num2 - 1][cols_num2 - 1] == 0) {
+                                double[] equation = standardMatrix[0];
+                                double answer = equation[unknwn];
+                                String[] Var = extractVariable(unknwn);
+                                double[] solutions = extractSolutions(reducedEchelonMatrix);
+                                verifySolution(reducedEchelonMatrix, reducedEchelonMatrix, Var);
+                            } else {
+                                double[] equation = standardMatrix[0];
+                                double answer = equation[unknwn];
+                                String[] Var = extractVariable(unknwn);
+                                double[] solutions = extractSolutions(reducedEchelonMatrix);
+                                System.out.println("For equation 1: ");
+                                // Printing the equation
+                                for (int i = 0; i < unknwn; i++) {
+                                    double cffcnt = equation[i];
+                                    if (cffcnt != 1) {
+                                        System.out.print("(" + cffcnt + ")");
+                                    }
+                                    System.out.print("(" + Var[i] + ")");
+                                    if (i != unknwn - 1) {
+                                        System.out.print(" + ");
+                                    } else {
+                                        System.out.print(" = ");
+                                    }
+                                }
+                                if (Math.abs(answer - Math.floor(answer)) < 0.001) {
+                                    double dbv = answer;
                                     int intv = (int) dbv;
-                                    System.out.println(Var[i] + " = " + intv);
+                                    System.out.print(intv + "\n");
                                     dbv = (double) intv;
-                                    dbv = solutions[i];
-                                } else if (solutions[i] == 0 || solutions[i] == -0) {
-                                    double dbv = solutions[i];
+                                    dbv = answer;
+                                } else if (answer == 0 || answer == -0) {
+                                    double dbv = answer;
                                     int intv = (int) dbv;
-                                    System.out.println(Var[i] + " = " + intv);
+                                    System.out.print(intv + "\n");
                                     dbv = (double) intv;
-                                    dbv = solutions[i];
+                                    dbv = answer;
                                 } else {
                                     // By using %.2f, it will reduce the number of decimal places that will be
                                     // printed into two only.
-                                    System.out.printf(Var[i] + " = " + "%.2f" + "\n", solutions[i]);
+                                    System.out.printf("%.2f\n", answer);
                                 }
-                            }
-                            System.out.println("The system has a unique solution.");
-                        }
-                    } else if (option == 6) { // Verify
-                        int rows_num = reducedEchelonMatrix.length;
-                        int cols_num = reducedEchelonMatrix[0].length;
 
-                        System.out.print("\n");
-                        System.out.print("The Matrix Form of the Equation: \n");
-                        printMatrixForm(standardMatrix);
-
-                        System.out.print("\n");
-                        System.out.print("The Reduced Row Echelon Form of the Equation: \n");
-                        printaugidtMat(reducedEchelonMatrix);
-
-                        System.out.print("\n");
-                        System.out.print("The Values of the Variables: \n");
-                        if (solutionType == 1 && reducedEchelonMatrix[rows_num - 1][cols_num - 1] != 0) {
-                            System.out.println("The system has no solution.");
-                        } else if (solutionType == 1 && reducedEchelonMatrix[rows_num - 1][cols_num - 1] == 0) {
-                            double[] equation = standardMatrix[0];
-                            double answer = equation[unknwn];
-                            String[] Var = extractVar(unknwn);
-                            double[] solutions = extractSolutions(reducedEchelonMatrix);
-                            showSolution(reducedEchelonMatrix, Var);
-                        } else {
-                            double[] solutions = extractSolutions(reducedEchelonMatrix);
-                            String[] Var = extractVar(unknwn);
-                            for (int i = 0; i < unknwn; i++) {
-                                if (Math.abs(solutions[i] - Math.floor(solutions[i])) < 0.001) {
-                                    double dbv = solutions[i];
+                                // Subtituting the values of the variables.
+                                for (int i = 0; i < unknwn; i++) {
+                                    double cffcnt = equation[i];
+                                    if (cffcnt != 1) {
+                                        System.out.print("(" + cffcnt + ")");
+                                    }
+                                    System.out.print("(" + solutions[i] + ")");
+                                    if (i != unknwn - 1) {
+                                        System.out.print(" + ");
+                                    } else {
+                                        System.out.print(" = ");
+                                    }
+                                }
+                                if (Math.abs(answer - Math.floor(answer)) < 0.001) {
+                                    double dbv = answer;
                                     int intv = (int) dbv;
-                                    System.out.println(Var[i] + " = " + intv);
+                                    System.out.print(intv + "\n");
                                     dbv = (double) intv;
-                                    dbv = solutions[i];
-                                } else if (solutions[i] == 0 || solutions[i] == -0) {
-                                    double dbv = solutions[i];
+                                    dbv = answer;
+                                } else if (answer == 0 || answer == -0) {
+                                    double dbv = answer;
                                     int intv = (int) dbv;
-                                    System.out.println(Var[i] + " = " + intv);
+                                    System.out.print(intv + "\n");
                                     dbv = (double) intv;
-                                    dbv = solutions[i];
+                                    dbv = answer;
                                 } else {
                                     // By using %.2f, it will reduce the number of decimal places that will be
                                     // printed into two only.
-                                    System.out.printf(Var[i] + " = " + "%.2f" + "\n", solutions[i]);
+                                    System.out.printf("%.2f\n", answer);
                                 }
-                            }
-                        }
 
-                        System.out.print("\n");
-                        System.out.print("Verifying the solution of the system: \n");
-                        if (solutionType == 1 && reducedEchelonMatrix[rows_num - 1][cols_num - 1] != 0) {
-                            System.out.println("The system has no solution. Cannot be verified!");
-                        } else if (solutionType == 1 && reducedEchelonMatrix[rows_num - 1][cols_num - 1] == 0) {
-                            double[] equation = standardMatrix[0];
-                            double answer = equation[unknwn];
-                            String[] Var = extractVar(unknwn);
-                            double[] solutions = extractSolutions(reducedEchelonMatrix);
-                            verifySolution(reducedEchelonMatrix, reducedEchelonMatrix, Var);
-                        } else {
-                            double[] equation = standardMatrix[0];
-                            double answer = equation[unknwn];
-                            String[] Var = extractVar(unknwn);
-                            double[] solutions = extractSolutions(reducedEchelonMatrix);
-                            System.out.println("For equation 1: ");
-                            // Printing the equation
-                            for (int i = 0; i < unknwn; i++) {
-                                double cffcnt = equation[i];
-                                if (cffcnt != 1) {
-                                    System.out.print("(" + cffcnt + ")");
+                                // Evaluation by term
+                                for (int i = 0; i < unknwn; i++) {
+                                    double cffcnt = equation[i];
+                                    double term = cffcnt * solutions[i];
+                                    System.out.print("(" + term + ")");
+                                    if (i != unknwn - 1) {
+                                        System.out.print(" + ");
+                                    } else {
+                                        System.out.print(" = ");
+                                    }
                                 }
-                                System.out.print("(" + Var[i] + ")");
-                                if (i != unknwn - 1) {
-                                    System.out.print(" + ");
+                                if (Math.abs(answer - Math.floor(answer)) < 0.001) {
+                                    double dbv = answer;
+                                    int intv = (int) dbv;
+                                    System.out.print(intv + "\n");
+                                    dbv = (double) intv;
+                                    dbv = answer;
+                                } else if (answer == 0 || answer == -0) {
+                                    double dbv = answer;
+                                    int intv = (int) dbv;
+                                    System.out.print(intv + "\n");
+                                    dbv = (double) intv;
+                                    dbv = answer;
                                 } else {
-                                    System.out.print(" = ");
+                                    // By using %.2f, it will reduce the number of decimal places that will be
+                                    // printed into two only.
+                                    System.out.printf("%.2f\n", answer);
                                 }
-                            }
-                            if (Math.abs(answer - Math.floor(answer)) < 0.001) {
-                                double dbv = answer;
-                                int intv = (int) dbv;
-                                System.out.print(intv + "\n");
-                                dbv = (double) intv;
-                                dbv = answer;
-                            } else if (answer == 0 || answer == -0) {
-                                double dbv = answer;
-                                int intv = (int) dbv;
-                                System.out.print(intv + "\n");
-                                dbv = (double) intv;
-                                dbv = answer;
-                            } else {
-                                // By using %.2f, it will reduce the number of decimal places that will be
-                                // printed into two only.
-                                System.out.printf("%.2f\n", answer);
-                            }
 
-                            // Subtituting the values of the variables.
-                            for (int i = 0; i < unknwn; i++) {
-                                double cffcnt = equation[i];
-                                if (cffcnt != 1) {
-                                    System.out.print("(" + cffcnt + ")");
-                                }
-                                System.out.print("(" + solutions[i] + ")");
-                                if (i != unknwn - 1) {
-                                    System.out.print(" + ");
+                                // Last equation
+                                if (Math.abs(answer - Math.floor(answer)) < 0.001) {
+                                    double dbv = answer;
+                                    int intv = (int) dbv;
+                                    System.out.println(intv + " = " + intv + "\n");
+                                    if (answer == answer) {
+                                        System.out.println("Solution is therefore true and unique!");
+                                    } else if (answer != answer) {
+                                        System.out.println("Solution is not true!");
+                                    }
+                                    dbv = (double) intv;
+                                    dbv = answer;
+                                } else if (answer == 0 || answer == -0) {
+                                    double dbv = answer;
+                                    int intv = (int) dbv;
+                                    System.out.println(intv + " = " + intv + "\n");
+                                    if (answer == answer) {
+                                        System.out.println("Solution is therefore true and unique!");
+                                    } else if (answer != answer) {
+                                        System.out.println("Solution is not true!");
+                                    }
+                                    dbv = (double) intv;
+                                    dbv = answer;
                                 } else {
-                                    System.out.print(" = ");
+                                    // By using %.2f, it will reduce the number of decimal places that will be
+                                    // printed into two only.
+                                    System.out.printf("%.2f = %.2f\n", answer, answer);
+                                    if (answer == answer) {
+                                        System.out.println("Solution is therefore true and unique!");
+                                    } else if (answer != answer) {
+                                        System.out.println("Solution is not true!");
+                                    }
                                 }
                             }
-                            if (Math.abs(answer - Math.floor(answer)) < 0.001) {
-                                double dbv = answer;
-                                int intv = (int) dbv;
-                                System.out.print(intv + "\n");
-                                dbv = (double) intv;
-                                dbv = answer;
-                            } else if (answer == 0 || answer == -0) {
-                                double dbv = answer;
-                                int intv = (int) dbv;
-                                System.out.print(intv + "\n");
-                                dbv = (double) intv;
-                                dbv = answer;
-                            } else {
-                                // By using %.2f, it will reduce the number of decimal places that will be
-                                // printed into two only.
-                                System.out.printf("%.2f\n", answer);
-                            }
-
-                            // Evaluation by term
-                            for (int i = 0; i < unknwn; i++) {
-                                double cffcnt = equation[i];
-                                double term = cffcnt * solutions[i];
-                                System.out.print("(" + term + ")");
-                                if (i != unknwn - 1) {
-                                    System.out.print(" + ");
-                                } else {
-                                    System.out.print(" = ");
-                                }
-                            }
-                            if (Math.abs(answer - Math.floor(answer)) < 0.001) {
-                                double dbv = answer;
-                                int intv = (int) dbv;
-                                System.out.print(intv + "\n");
-                                dbv = (double) intv;
-                                dbv = answer;
-                            } else if (answer == 0 || answer == -0) {
-                                double dbv = answer;
-                                int intv = (int) dbv;
-                                System.out.print(intv + "\n");
-                                dbv = (double) intv;
-                                dbv = answer;
-                            } else {
-                                // By using %.2f, it will reduce the number of decimal places that will be
-                                // printed into two only.
-                                System.out.printf("%.2f\n", answer);
-                            }
-
-                            // Last equation
-                            if (Math.abs(answer - Math.floor(answer)) < 0.001) {
-                                double dbv = answer;
-                                int intv = (int) dbv;
-                                System.out.println(intv + " = " + intv + "\n");
-                                if (answer == answer) {
-                                    System.out.println("Solution is therefore true and unique!");
-                                } else if (answer != answer) {
-                                    System.out.println("Solution is not true!");
-                                }
-                                dbv = (double) intv;
-                                dbv = answer;
-                            } else if (answer == 0 || answer == -0) {
-                                double dbv = answer;
-                                int intv = (int) dbv;
-                                System.out.println(intv + " = " + intv + "\n");
-                                if (answer == answer) {
-                                    System.out.println("Solution is therefore true and unique!");
-                                } else if (answer != answer) {
-                                    System.out.println("Solution is not true!");
-                                }
-                                dbv = (double) intv;
-                                dbv = answer;
-                            } else {
-                                // By using %.2f, it will reduce the number of decimal places that will be
-                                // printed into two only.
-                                System.out.printf("%.2f = %.2f\n", answer, answer);
-                                if (answer == answer) {
-                                    System.out.println("Solution is therefore true and unique!");
-                                } else if (answer != answer) {
-                                    System.out.println("Solution is not true!");
-                                }
-                            }
-                        }
-                    } else {
-                        System.out.println("Input invalid. Please try again!");
+                            break;
+                        default:
+                            System.out.println("Input invalid. Please try again!");
+                            break;
                     }
-                } catch (Exception e) {
+                }catch (Exception e) {
                     System.out.println("Input invalid. Please try again!");
                     userInput.next();
                 }
             }
-        } catch (Exception e) {
+        }catch (Exception e) {
             System.out.println("Invalid Input!");
             collectMatrix();
         }
         userInput.close();
     }
 
-    // This will generate the variable by the number of unknowns.
-    public static String[] extractVar(int unknwn) {
+    /*
+     * This method first calculates the value of the variable by subtracting the unknown value from 122,
+     * adding 1 to the result, and converting it to a character. It then initializes an array of strings
+     * with a length of the unknown value.
+     *
+     * The method then enters a loop that iterates through the array, assigning each element the
+     * string representation of the variable value. The variable value is incremented by 1 for each
+     * iteration of the loop.
+     *
+     * Finally, the method returns the array of strings representing the extracted variables.
+     *
+     * Note: This method assumes that the unknown value is a positive integer less than or equal to 122.
+     */
+    public static String[] extractVariable(int unknwn) {
         int var = 122 - unknwn + 1;
         String[] Var = new String[unknwn];
         for (int i = 0; i < unknwn; i++) {
@@ -393,7 +429,16 @@ public class Main {
         return Var;
     }
 
-    // This will extract the solutions from the Augmented Identity Matrix.
+    /*
+    * This method first determines the number of rows and columns in the input matrix. It then initializes
+    * an array of doubles with a length equal to the number of rows in the matrix.
+    *
+    * The method then enters a loop that iterates through the rows of the matrix. For each row, it assigns
+    * the corresponding element in the solutions array the value of the last column in that row.
+    *
+    * Finally, the method returns the array of doubles representing the solutions.
+    */
+
     public static double[] extractSolutions(double[][] matrix) {
         int rows_num = matrix.length;
         int cols_num = matrix[0].length;
@@ -404,8 +449,26 @@ public class Main {
         return solutions;
     }
 
-    // This will convert the Augmented Matrix into reducedEchelonMatrix while using
-    // Gauss-Jordan Elimination.
+    /*
+     * Performs Gaussian-Jordan elimination to solve a system of linear equations represented by a matrix.
+     *
+     * @param a The matrix representing the system of linear equations.
+     * @return An integer value indicating the success or failure of the Gaussian-Jordan elimination process.
+     *
+     * This method implements the Gaussian-Jordan elimination algorithm to solve a system of linear equations
+     * represented by the input matrix 'a'. It performs elementary row operations to transform the matrix into
+     * reduced row echelon form.
+     *
+     * The method iterates through the rows of the matrix, handling cases where the diagonal element is zero by
+     * swapping rows to ensure a non-zero pivot element. It then performs row operations to eliminate all elements
+     * except the pivot element in each column.
+     *
+     * If the algorithm encounters a situation where it cannot proceed due to a lack of pivot elements, it sets
+     * the return value to 1 to indicate failure.
+     *
+     * The method returns an integer value indicating the success or failure of the Gaussian-Jordan elimination process.
+     */
+
     public static int gsjrd(double[][] a) {
         int n = a.length;
         int i, j, k = 0, c, value = 0;
@@ -716,6 +779,28 @@ public class Main {
 
     }
 
+    /*
+     * Prints the steps of converting a matrix to reduced row echelon form (RREF).
+     *
+     * This method takes a two-dimensional array of doubles representing a matrix and prints the steps of
+     * converting it to reduced row echelon form (RREF). It uses Gauss-Jordan elimination to perform the
+     * conversion.
+     *
+     * The method first initializes the necessary variables, including the number of rows and columns in
+     * the matrix, and a step counter. It then enters a nested for loop to iterate through the rows and
+     * columns of the matrix, performing the necessary operations to convert it to RREF.
+     *
+     * Within the loop, the method divides each row by the value at the diagonal to make the diagonal element
+     * equal to 1. It then subtracts multiples of each row from other rows to make the other elements in the
+     * column equal to 0.
+     *
+     * The method also checks if the last column of the matrix is all zeros, indicating that the matrix has
+     * a free variable. If so, it breaks out of the loop.
+     *
+     * After each iteration of the loop, the method prints the current step of the RREF conversion,
+     * formatted with row and column labels.
+     */
+    
     public static void printRdcechStep(double[][] matrix) {
         int rows_num = matrix.length;
         int cols_num = matrix[0].length;
@@ -735,8 +820,7 @@ public class Main {
                     }
                 }
                 int l = 0;
-                for (int s = 0; s < rows_num; s++)// Checking if no solution or infinite solution
-                {
+                for (int s = 0; s < rows_num; s++) {
                     if (matrix[rows_num - 1][s] == 0.0) {
                         l = l + 1;
                     }
@@ -791,7 +875,18 @@ public class Main {
         }
     }
 
-    // This will print out the Augmented Identity Matrix Form of the called Matrix
+    /*
+     * Prints a matrix in augmented matrix format with row and column labels.
+     *
+     * This method takes a two-dimensional array of doubles representing a matrix and prints it in augmented
+     * matrix format with row and column labels. It checks if the matrix elements are integers and prints
+     * them accordingly, and if not, it prints them with two decimal places.
+     *
+     * The method uses a nested for loop to iterate through the rows and columns of the matrix, printing
+     * each element in the correct format. It also checks if the last column of the matrix is an integer
+     * and prints it accordingly.
+     */
+
     public static void printaugidtMat(double[][] matrix) {
         int rows_num = matrix.length;
         int cols_num = matrix[0].length;
@@ -839,7 +934,7 @@ public class Main {
 
     public static void printLinearEquations(double[][] matrix) {
         double[] solutions = extractSolutions(matrix);
-        String[] variables = extractVar(matrix.length);
+        String[] variables = extractVariable(matrix.length);
 
         for (int i = 0; i < matrix.length; i++) {
             boolean hasCoefficient = false; // Track if any non-zero coefficient has been encountered
@@ -865,7 +960,7 @@ public class Main {
     // This method will print out the output of the Matrix that was called.
     public static void printMatrixForm(double[][] matrix) {
         double[] solutions = extractSolutions(matrix);
-        String[] Var = extractVar(matrix.length);
+        String[] Var = extractVariable(matrix.length);
 
         int rows_num = matrix.length;
         int cols_num = matrix[0].length;
